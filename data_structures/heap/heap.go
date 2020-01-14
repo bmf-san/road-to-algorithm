@@ -107,13 +107,13 @@ func (h *Heap) remove() int {
 }
 
 func main() {
-	inputArray := []int{6, 5, 3, 7, 2, 8}
-	h := newHeap(len(inputArray))
-	for i := 0; i < len(inputArray); i++ {
-		h.insert(inputArray[i])
+	s := []int{6, 5, 3, 7, 2, 8}
+	h := newHeap(len(s))
+	for i := 0; i < len(s); i++ {
+		h.insert(s[i])
 	}
 	h.buildMinHeap()
-	for i := 0; i < len(inputArray); i++ {
+	for i := 0; i < len(s); i++ {
 		fmt.Println(h.remove())
 	}
 	fmt.Scanln()
