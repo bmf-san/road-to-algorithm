@@ -1,72 +1,75 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 )
 
-// Node has a key and at most two children node.
+// Node is a node of a tree.
 type Node struct {
 	Key   int
 	Left  *Node
 	Right *Node
 }
 
-// Tree has a root node.
-type Tree struct {
+// BST is a binary search tree.
+type BST struct {
 	Root *Node
 }
 
-// Insert insert a node to targetNode.
-func (t *Tree) Insert(key int) {
-	if t.Root == nil {
-		// Create a root node
-		t.Root = &Node{key, nil, nil}
+// insert insert a node to tree.
+func (b *BST) insert(key int) {
+	if b.Root == nil {
+		b.Root = &Node{
+			Key:   key,
+			Left:  nil,
+			Right: nil,
+		}
 	} else {
-		RecursiveInsert(t.Root, &Node{key, nil, nil})
+		recursiveInsert(b.Root, &Node{
+			Key:   key,
+			Left:  nil,
+			Right: nil,
+		})
 	}
 }
 
-// RecursiveInsert insert a new node to target node.
-func RecursiveInsert(targetNode *Node, newNode *Node) {
-	// Left child key(targetNode.Key) =< Parent key(newNode.Key) =< Right child key(targetNode.Key)
+// recursiveInsert insert a new node to targetNode recursively.
+func recursiveInsert(targetNode *Node, newNode *Node) {
+	// if a newNode is smaller than targetNode, insert a newNode to left child node.
+	// if a newNode is a bigger than targetNode, insert a newNode to right childe node.
 	if newNode.Key < targetNode.Key {
 		if targetNode.Left == nil {
 			targetNode.Left = newNode
 		} else {
-			// Recursive calling
-			RecursiveInsert(targetNode.Left, newNode)
+			recursiveInsert(targetNode.Left, newNode)
 		}
-	} else { // targetNode.Key < newNode.Key
+	} else {
 		if targetNode.Right == nil {
 			targetNode.Right = newNode
 		} else {
-			// Recursive calling
-			RecursiveInsert(targetNode.Right, newNode)
+			recursiveInsert(targetNode.Right, newNode)
 		}
 	}
-
 }
 
-// Remove remove a key from tree.
-func (t *Tree) Remove(key int) {
-	RecursiveRemove(t.Root, key)
+// remove remove a key from tree.
+func (b *BST) remove(key int) {
+	recursiveRemove(b.Root, key)
 }
 
-// RecursiveRemove remove a key from targetNodes recursively.
-func RecursiveRemove(targetNode *Node, key int) *Node {
+// recursiveRemove remove a key from tree recursively.
+func recursiveRemove(targetNode *Node, key int) *Node {
 	if targetNode == nil {
 		return nil
 	}
 
 	if key < targetNode.Key {
-		targetNode.Left = RecursiveRemove(targetNode.Left, key)
+		targetNode.Left = recursiveRemove(targetNode.Left, key)
 		return targetNode
 	}
 
 	if key > targetNode.Key {
-		targetNode.Right = RecursiveRemove(targetNode.Right, key)
+		targetNode.Right = recursiveRemove(targetNode.Right, key)
 		return targetNode
 	}
 
@@ -96,86 +99,85 @@ func RecursiveRemove(targetNode *Node, key int) *Node {
 	}
 
 	targetNode.Key = leftNodeOfMostRightNode.Key
-	targetNode.Right = RecursiveRemove(targetNode.Right, targetNode.Key)
+	targetNode.Right = recursiveRemove(targetNode.Right, targetNode.Key)
 	return targetNode
 }
 
-// Search search a key from tree.
-func (t *Tree) Search(key int) string {
-	result := RecursiveSearch(t.Root, key)
+// search search a key from tree.
+func (b *BST) search(key int) bool {
+	result := recursiveSearch(b.Root, key)
 
-	if result {
-		return "Key is exist in tree."
-	}
-
-	return "Key is not exist in tree."
+	return result
 }
 
-// RecursiveSearch search a key from tree recursively.
-func RecursiveSearch(targetNode *Node, key int) bool {
+// recursiveSearch search a key from tree recursively.
+func recursiveSearch(targetNode *Node, key int) bool {
 	if targetNode == nil {
 		return false
 	}
 
-	// if key is smaller then target node, next time start searching from left node.
 	if key < targetNode.Key {
-		return RecursiveSearch(targetNode.Left, key)
+		return recursiveSearch(targetNode.Left, key)
 	}
 
-	// if key is higher then target node, next time start searching from right node.
 	if key > targetNode.Key {
-		return RecursiveSearch(targetNode.Right, key)
+		return recursiveSearch(targetNode.Right, key)
 	}
 
+	// targetNode == key
 	return true
 }
 
-// InOrderTraverse traverse by in-order.
-func (t *Tree) InOrderTraverse() {
-	RecursiveInOrderTravese(t.Root)
+// depth-first search
+// inOrderTraverse traverse tree by in-order.
+func (b *BST) inOrderTraverse() {
+	recursiveInOrderTraverse(b.Root)
 }
 
-// RecursiveInOrderTravese traverse by in-order recursively.
-func RecursiveInOrderTravese(n *Node) {
+// recursiveInOrderTraverse traverse tree by in-order recursively.
+func recursiveInOrderTraverse(n *Node) {
 	if n != nil {
-		RecursiveInOrderTravese(n.Left)
-		fmt.Printf("%d, ", n.Key)
-		RecursiveInOrderTravese(n.Right)
+		recursiveInOrderTraverse(n.Left)
+		fmt.Printf("%d\n", n.Key)
+		recursiveInOrderTraverse(n.Right)
 	}
 }
 
-// PreOrderTraverse traverse by pre-order.
-func (t *Tree) PreOrderTraverse() {
-	RecursivePreOrderTraverse(t.Root)
+// depth-first search
+// preOrderTraverse traverse by pre-order.
+func (b *BST) preOrderTraverse() {
+	recursivePreOrderTraverse(b.Root)
 }
 
-// RecursivePreOrderTraverse travese by pre-order recursively.
-func RecursivePreOrderTraverse(n *Node) {
+// recursivePreOrderTraverse traverse by pre-order recursively.
+func recursivePreOrderTraverse(n *Node) {
 	if n != nil {
-		fmt.Printf("%d ", n.Key)
-		RecursivePreOrderTraverse(n.Left)
-		RecursivePreOrderTraverse(n.Right)
+		fmt.Printf("%d\n", n.Key)
+		recursivePreOrderTraverse(n.Left)
+		recursivePreOrderTraverse(n.Right)
 	}
 }
 
-// PostOrderTraverse traverse by post-order.
-func (t *Tree) PostOrderTraverse() {
-	RecursivePostOrderTraverse(t.Root)
+// depth-first search
+// postOrderTraverse traverse by post-order.
+func (b *BST) postOrderTraverse() {
+	recursivePostOrderTraverse(b.Root)
 }
 
-// RecursivePostOrderTraverse traverse by post-order recursively.
-func RecursivePostOrderTraverse(n *Node) {
+// recursivePostOrderTraverse traverse by post-order recursively.
+func recursivePostOrderTraverse(n *Node) {
 	if n != nil {
-		RecursivePostOrderTraverse(n.Left)
-		RecursivePostOrderTraverse(n.Right)
-		fmt.Printf("%d ", n.Key)
+		recursivePostOrderTraverse(n.Left)
+		recursivePostOrderTraverse(n.Right)
+		fmt.Printf("%v\n", n.Key)
 	}
 }
 
-// LevelOrderTraverse traverse by level-order.
-func (t *Tree) LevelOrderTraverse() {
-	if t != nil {
-		queue := []*Node{t.Root}
+// breath-first search
+// levelOrderTraverse traverse by level-order.
+func (b *BST) levelOrderTraverse() {
+	if b != nil {
+		queue := []*Node{b.Root}
 
 		for len(queue) > 0 {
 			currentNode := queue[0]
@@ -186,6 +188,7 @@ func (t *Tree) LevelOrderTraverse() {
 			if currentNode.Left != nil {
 				queue = append(queue, currentNode.Left)
 			}
+
 			if currentNode.Right != nil {
 				queue = append(queue, currentNode.Right)
 			}
@@ -193,55 +196,32 @@ func (t *Tree) LevelOrderTraverse() {
 	}
 }
 
-// JSONStringify output tree by json strings.
-func (t *Tree) JSONStringify() string {
-	jsonBytes, err := json.Marshal(t)
-	if err != nil {
-		return err.Error()
-	}
-
-	jsonStr := string(jsonBytes)
-	var buf bytes.Buffer
-
-	err = json.Indent(&buf, []byte(jsonStr), "", " ")
-	if err != nil {
-		return err.Error()
-	}
-
-	return buf.String()
-}
-
 func main() {
-	// Intialize a Tree
-	tree := &Tree{}
+	tree := &BST{}
 
-	// Insert
-	tree.Insert(10)
-	tree.Insert(2)
-	tree.Insert(3)
-	tree.Insert(3)
-	tree.Insert(3)
-	tree.Insert(15)
-	tree.Insert(14)
-	tree.Insert(18)
-	tree.Insert(16)
-	tree.Insert(16)
+	tree.insert(10)
+	tree.insert(2)
+	tree.insert(3)
+	tree.insert(3)
+	tree.insert(3)
+	tree.insert(15)
+	tree.insert(14)
+	tree.insert(18)
+	tree.insert(16)
+	tree.insert(16)
 
-	// Remove
-	tree.Remove(3)
-	tree.Remove(10)
-	tree.Remove(16)
+	tree.remove(3)
+	tree.remove(10)
+	tree.remove(16)
 
-	// Search
-	fmt.Println(tree.Search(10))
-	fmt.Println(tree.Search(19))
+	fmt.Println(tree.search(10))
+	fmt.Println(tree.search(19))
 
 	// Traverse
-	tree.InOrderTraverse()
-	tree.PreOrderTraverse()
-	tree.PostOrderTraverse()
-	tree.LevelOrderTraverse()
+	tree.inOrderTraverse()
+	tree.preOrderTraverse()
+	tree.postOrderTraverse()
+	tree.levelOrderTraverse()
 
-	// Output
-	fmt.Printf("%s", tree.JSONStringify())
+	fmt.Printf("%#v\n", tree)
 }

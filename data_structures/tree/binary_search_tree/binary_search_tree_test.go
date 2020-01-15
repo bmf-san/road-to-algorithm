@@ -1,143 +1,106 @@
 package main
 
 import (
+	"reflect"
 	"testing"
 )
 
-func newTree() *Tree {
-	tree := &Tree{}
-
-	tree.Insert(10)
-	tree.Insert(2)
-	tree.Insert(3)
-	tree.Insert(3)
-	tree.Insert(3)
-	tree.Insert(15)
-	tree.Insert(14)
-	tree.Insert(18)
-	tree.Insert(16)
-	tree.Insert(16)
-
-	return tree
-}
-
 func TestInsert(t *testing.T) {
-	tree := newTree()
+	tree := &BST{}
 
-	actual := tree.JSONStringify()
-	expected := `{
- "Root": {
-  "Key": 10,
-  "Left": {
-   "Key": 2,
-   "Left": null,
-   "Right": {
-    "Key": 3,
-    "Left": null,
-    "Right": {
-     "Key": 3,
-     "Left": null,
-     "Right": {
-      "Key": 3,
-      "Left": null,
-      "Right": null
-     }
-    }
-   }
-  },
-  "Right": {
-   "Key": 15,
-   "Left": {
-    "Key": 14,
-    "Left": null,
-    "Right": null
-   },
-   "Right": {
-    "Key": 18,
-    "Left": {
-     "Key": 16,
-     "Left": null,
-     "Right": {
-      "Key": 16,
-      "Left": null,
-      "Right": null
-     }
-    },
-    "Right": null
-   }
-  }
- }
-}`
+	tree.insert(10)
+	tree.insert(2)
+	tree.insert(3)
+	tree.insert(15)
 
-	if actual != expected {
-		t.Error("Json data is not equal")
+	expected := &BST{
+		Root: &Node{
+			Key: 10,
+			Left: &Node{
+				Key:  2,
+				Left: nil,
+				Right: &Node{
+					Key:   3,
+					Left:  nil,
+					Right: nil,
+				},
+			},
+			Right: &Node{
+				Key:   15,
+				Left:  nil,
+				Right: nil,
+			},
+		},
 	}
 
-	return
+	if !reflect.DeepEqual(tree, expected) {
+		t.Errorf("actual: %v expected: %v", tree, expected)
+	}
 }
 
 func TestRemove(t *testing.T) {
-	tree := newTree()
+	tree := &BST{}
 
-	tree.Remove(3)
-	tree.Remove(10)
-	tree.Remove(16)
+	tree.insert(10)
+	tree.insert(2)
+	tree.insert(3)
+	tree.insert(15)
 
-	actual := tree.JSONStringify()
+	tree.remove(3)
 
-	expected := `{
- "Root": {
-  "Key": 14,
-  "Left": {
-   "Key": 2,
-   "Left": null,
-   "Right": {
-    "Key": 3,
-    "Left": null,
-    "Right": {
-     "Key": 3,
-     "Left": null,
-     "Right": null
-    }
-   }
-  },
-  "Right": {
-   "Key": 15,
-   "Left": null,
-   "Right": {
-    "Key": 18,
-    "Left": {
-     "Key": 16,
-     "Left": null,
-     "Right": null
-    },
-    "Right": null
-   }
-  }
- }
-}`
-
-	if actual != expected {
-		t.Error(("Json data is not equal"))
+	expected := &BST{
+		Root: &Node{
+			Key: 10,
+			Left: &Node{
+				Key:   2,
+				Left:  nil,
+				Right: nil,
+			},
+			Right: &Node{
+				Key:   15,
+				Left:  nil,
+				Right: nil,
+			},
+		},
 	}
 
-	return
+	if !reflect.DeepEqual(tree, expected) {
+		t.Errorf("actual: %v expected: %v", tree, expected)
+	}
 }
 
 func TestSearch(t *testing.T) {
-	tree := newTree()
+	tree := &BST{}
 
-	actualForExist := tree.Search(10)
-	actualForNotExist := tree.Search(19)
+	tree.insert(10)
+	tree.insert(2)
+	tree.insert(3)
+	tree.insert(3)
+	tree.insert(3)
+	tree.insert(15)
+	tree.insert(14)
+	tree.insert(18)
+	tree.insert(16)
+	tree.insert(16)
 
-	expectedForExist := "Key is exist in tree."
-	expectedForNotExist := "Key is not exist in tree."
-
-	if actualForExist != expectedForExist {
-		t.Error("Could not found a key.")
+	cases := []struct {
+		item     int
+		expected bool
+	}{
+		{
+			item:     10,
+			expected: true,
+		},
+		{
+			item:     19,
+			expected: false,
+		},
 	}
 
-	if actualForNotExist != expectedForNotExist {
-		t.Error("Could not found a key.")
+	for _, c := range cases {
+		actual := tree.search(c.item)
+		if actual != c.expected {
+			t.Errorf("actual: %v expected: %v", actual, c.expected)
+		}
 	}
 }
