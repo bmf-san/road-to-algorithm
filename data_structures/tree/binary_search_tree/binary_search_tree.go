@@ -173,7 +173,7 @@ func recursivePostOrderTraverse(n *Node) {
 	}
 }
 
-// breath-first search
+// breadth-first search
 // levelOrderTraverse traverse by level-order.
 func (b *BST) levelOrderTraverse() {
 	if b != nil {
