@@ -5,10 +5,10 @@ import (
 	"testing"
 )
 
-func TestBubbleSort(t *testing.T) {
+func TestMergeSort(t *testing.T) {
 	n := []int{2, 5, 7, 1, 3, 9}
 
-	actual := bubbleSort(n)
+	actual := mergeSort(n)
 	expected := []int{1, 2, 3, 5, 7, 9}
 
 	if !reflect.DeepEqual(actual, expected) {
